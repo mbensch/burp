@@ -32,11 +32,12 @@ Always run `bun run test` and `bun run lint` before opening a PR. Fix all errors
 1. **Issue first** — Before starting any work, ensure a GitHub issue exists. If one was not specified by the user, create one with `gh issue create` describing the work.
 2. **Branch from main** — Create a branch named `issue/<number>-<short-slug>` off the latest `main`.
 3. **Do the work** — Implement, test, and lint on the branch.
-4. **Open a PR** — Every PR must:
+4. **Update docs if needed** — Before opening a PR, check whether `AGENTS.md` or `README.md` need to reflect your changes (new commands, architecture changes, changed tooling, new conventions, etc.). Update them in the same PR.
+5. **Open a PR** — Every PR must:
    - Follow Conventional Commits in the title (e.g. `feat:`, `fix:`, `ci:`) — CI enforces this.
    - Reference the closing issue in the body (`Closes #N`).
    - Be linked to the **Burp - CLI RSS Reader** GitHub project (`--project "Burp - CLI RSS Reader"`).
-5. **Never push directly to `main`** — Branch protection requires PRs with passing CI checks.
+6. **Never push directly to `main`** — Branch protection requires PRs with passing CI checks.
 
 ## Architecture
 
@@ -92,6 +93,7 @@ Views are pure presentational components. All state lives in `app.tsx`.
 ## PR checklist
 
 - [ ] Work is tracked by a GitHub issue (create one if not specified)
+- [ ] `AGENTS.md` and `README.md` updated if needed
 - [ ] `bun run test` passes
 - [ ] `bun run lint` is clean
 - [ ] `bun run build` succeeds
