@@ -16,19 +16,34 @@ A cheeky terminal RSS reader. Run `burp` and feast on your feeds.
 - Open any article in your default browser
 - Non-interactive CLI commands for scripting
 
-## Prerequisites
-
-- [Bun](https://bun.sh) — runtime and package manager
-- Node.js 22 (used by native `better-sqlite3` bindings; managed via [asdf](https://asdf-vm.com))
-
 ## Installation
 
-```bash
+### Binary (recommended)
+
+macOS and Linux — no dependencies required:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/mbensch/burp/main/scripts/install.sh | sh
+```
+
+Installs to `~/.local/bin/burp`. Override the location with `BURP_INSTALL_DIR`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/mbensch/burp/main/scripts/install.sh | BURP_INSTALL_DIR=/usr/local/bin sh
+```
+
+Or download the binary for your platform directly from the [latest release](https://github.com/mbensch/burp/releases/latest).
+
+### From source
+
+Requires [Bun](https://bun.sh).
+
+```sh
 git clone https://github.com/mbensch/burp.git
 cd burp
 bun install
-bun run build
-npm link   # makes 'burp' available globally
+bun run build    # compiles native binary to dist/burp
+./dist/burp
 ```
 
 ## Usage
@@ -88,9 +103,9 @@ The SQLite database is stored at `~/.config/burp/burp.db`. No cloud sync, no acc
 
 ```bash
 bun install          # install dependencies
-bun run dev          # run in dev mode (tsx, no build step)
-bun run build        # bundle to dist/index.mjs
-bun run test         # run all tests (Vitest)
+bun run dev          # run in dev mode (no build step)
+bun run build        # compile native binary to dist/burp
+bun run test         # run all tests
 bun run test:watch   # watch mode
 bun run lint         # Biome lint + format check
 bun run lint:fix     # auto-fix formatting

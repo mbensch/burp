@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "bun run src/index.tsx",
-    "build": "bun build --compile --define 'process.env.DEV=\"false\"' --target=bun-darwin-arm64 src/index.tsx --outfile dist/burp",
+    "build": "bun build --compile --define 'process.env.DEV=\"false\"' src/index.tsx --outfile dist/burp",
     "build:binary": "bash scripts/build-binaries.sh",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
