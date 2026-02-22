@@ -29,11 +29,13 @@ Always run `bun run test` and `bun run lint` before opening a PR. Fix all errors
 
 ## Workflow
 
-1. **Issue first** — Before starting any work, ensure a GitHub issue exists. If one was not specified by the user, create one with `gh issue create` describing the work.
-2. **Branch from main** — Create a branch named `issue/<number>-<short-slug>` off the latest `main`.
+> **Every step below is mandatory for every task — no exceptions, no skipping.**
+
+1. **Issue first (REQUIRED before any code)** — Before writing a single line of code, ensure a GitHub issue exists. If the user did not specify one, create it immediately with `gh issue create --project "Burp - CLI RSS Reader"`. Record the issue number — every subsequent step depends on it.
+2. **Branch from main (REQUIRED)** — Create a branch named `issue/<number>-<short-slug>` off the latest `main`. Never commit work directly to `main`.
 3. **Do the work** — Implement, test, and lint on the branch.
 4. **Update docs if needed** — Before opening a PR, check whether `AGENTS.md` or `README.md` need to reflect your changes (new commands, architecture changes, changed tooling, new conventions, etc.). Update them in the same PR.
-5. **Open a PR** — Every PR must:
+5. **Open a PR (REQUIRED after all work is done)** — Always open a PR when the task is complete — never leave finished work without one. Every PR must:
    - Follow Conventional Commits in the title (e.g. `feat:`, `fix:`, `ci:`) — CI enforces this.
    - Reference the closing issue in the body (`Closes #N`).
    - Be linked to the **Burp - CLI RSS Reader** GitHub project (`--project "Burp - CLI RSS Reader"`).
