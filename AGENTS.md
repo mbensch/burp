@@ -1,0 +1,87 @@
+# AGENTS.md
+
+Guidance for AI coding agents working on this repository.
+
+## Tech stack
+
+| Layer | Tool |
+|-------|------|
+| Runtime | Bun (also Node 22 for native addons) |
+| Language | TypeScript (strict mode) |
+| TUI framework | Ink 5 (React for CLIs) + ink-text-input, ink-select-input |
+| Database | SQLite via `better-sqlite3` |
+| RSS parsing | `rss-parser` |
+| HTML rendering | `html-to-text` |
+| Linting / formatting | Biome |
+| Testing | Vitest |
+| Build | tsup (ESM output to `dist/index.mjs`) |
+
+## Commands
+
+```bash
+bun run test        # run all tests
+bun run lint        # check lint and formatting
+bun run lint:fix    # auto-fix formatting
+bun run build       # build the CLI bundle
+```
+
+Always run `bun run test` and `bun run lint` before opening a PR. Fix all errors — warnings are acceptable only if the suppression is genuinely intentional.
+
+## Architecture
+
+```
+src/index.tsx          CLI entry — parse args, launch TUI or run non-interactive command
+src/app.tsx            Root Ink component: view router + all keyboard handling
+src/db/connection.ts   Singleton DB (WAL, foreign keys ON, runs migrations on open)
+src/db/schema.ts       Schema definition and runMigrations()
+src/db/queries.ts      All DB read/write operations — the only layer that touches SQLite
+src/services/          Business logic — call query layer, never touch DB directly
+src/views/             Ink view components — receive props, emit events, no DB access
+src/components/        Small shared UI components (StatusBar, Tag)
+```
+
+**Data flow:** `index.tsx` → `app.tsx` → `services/*` + `db/queries.ts` → SQLite
+
+Views are pure presentational components. All state lives in `app.tsx`.
+
+## Key conventions
+
+### TypeScript
+- Strict mode is on. All query results from `better-sqlite3` must be cast explicitly, e.g. `.get(...) as MyType | undefined`.
+- Use `0 | 1` for SQLite boolean columns (`is_read`, `is_starred`), not `boolean`.
+- Prefer `interface` over `type` for object shapes.
+
+### Database
+- All DB operations go in `src/db/queries.ts`. Never write raw SQL in views or services.
+- Use `ON CONFLICT ... DO UPDATE ... RETURNING *` for upserts.
+- The FTS5 table (`articles_fts`) is kept in sync via triggers defined in `schema.ts`. Do not manually insert into it.
+- `runMigrations()` is idempotent — add new schema changes as a new migration version, never edit existing ones.
+- The DB is opened once via `getDb()` in `connection.ts`; pass the instance down as a parameter.
+
+### Ink / React
+- Keyboard input is handled centrally in `app.tsx` via `useInput`. Views do not call `useInput` themselves (except for text input fields which use `ink-text-input`).
+- `useCallback` and `useEffect` deps must be complete — Biome enforces `useExhaustiveDependencies`.
+- Use `flexGrow={1}` to fill available terminal height. The outer `<Box>` in `app.tsx` uses `height={process.stdout.rows}`.
+
+### Services
+- Services (`feed.ts`, `opml.ts`, `search.ts`) must not throw to the caller for recoverable errors — catch and return them in an `errors` array or return an empty result.
+- Do not make real network calls in tests. Mock `Parser.prototype.parseURL` with `vi.spyOn`.
+
+### Biome
+- Formatting: 2-space indent, double quotes, trailing commas, 100-char line width.
+- Run `bun run lint:fix` to auto-fix formatting before checking for remaining issues.
+- Use `// biome-ignore lint/<rule>: <reason>` only when strictly necessary and the comment must be on the line immediately before the violation.
+
+### Tests
+- Every new module must have a co-located `.test.ts` / `.test.tsx` file.
+- Use an in-memory SQLite DB for all DB tests: `new Database(":memory:")` with `runMigrations()` in `beforeEach`.
+- Clean up with `db.close()` in `afterEach`.
+- Test files live alongside source files (`src/db/queries.test.ts`, not a separate `__tests__` directory).
+
+## PR checklist
+
+- [ ] `bun run test` passes
+- [ ] `bun run lint` is clean
+- [ ] `bun run build` succeeds
+- [ ] PR is linked to the **Burp - CLI RSS Reader** GitHub project (`--project "Burp - CLI RSS Reader"` on `gh pr create`)
+- [ ] PR body references the closing issue (`Closes #N`)
