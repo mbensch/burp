@@ -4,6 +4,7 @@ import { platform } from "node:os";
 import { convert } from "html-to-text";
 import { Box, useApp, useInput } from "ink";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Header } from "./components/Header";
 import { StatusBar } from "./components/StatusBar";
 import type { Article, Feed, FeedWithUnread } from "./db/queries";
 import {
@@ -316,7 +317,8 @@ export function App({ db, initialOpmlPath }: AppProps) {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <Box flexDirection="column" height={process.stdout.rows ?? 24}>
+    <Box flexDirection="column" height={process.stdout.rows ?? 24} paddingX={2} paddingTop={1}>
+      <Header />
       <Box flexGrow={1} flexDirection="column">
         {view === "feedList" && (
           <FeedList feeds={feeds} selectedIndex={feedIndex} isRefreshing={isRefreshing} />
