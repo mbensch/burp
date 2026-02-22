@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -37,7 +37,7 @@ function sanitizeFtsQuery(raw: string): string {
 
 // ─── Search ───────────────────────────────────────────────────────────────────
 
-export function searchArticles(db: Database.Database, query: string, limit = 50): SearchResult[] {
+export function searchArticles(db: Database, query: string, limit = 50): SearchResult[] {
   const trimmed = query.trim();
   if (!trimmed) return [];
 
@@ -45,7 +45,7 @@ export function searchArticles(db: Database.Database, query: string, limit = 50)
   if (!ftsQuery) return [];
 
   return db
-    .prepare<[string, number], SearchResult>(
+    .prepare<SearchResult, [string, number]>(
       `SELECT
          a.id,
          a.feed_id,

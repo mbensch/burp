@@ -1,10 +1,10 @@
-import Database from "better-sqlite3";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { Database } from "bun:sqlite";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { addFeed, upsertArticle } from "../db/queries";
 import { runMigrations } from "../db/schema";
 import { searchArticles } from "./search";
 
-let db: Database.Database;
+let db: Database;
 
 function seedFeed(overrides: Partial<Parameters<typeof addFeed>[1]> = {}) {
   return addFeed(db, {
@@ -33,7 +33,7 @@ function seedArticle(feedId: number, overrides: Partial<Parameters<typeof upsert
 
 beforeEach(() => {
   db = new Database(":memory:");
-  db.pragma("foreign_keys = ON");
+  db.exec("PRAGMA foreign_keys = ON");
   runMigrations(db);
 });
 
