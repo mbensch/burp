@@ -1,0 +1,25 @@
+{
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "bash scripts/build-binaries.sh"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          { "path": "dist/burp-darwin-arm64", "label": "macOS (Apple Silicon)" },
+          { "path": "dist/burp-darwin-x64", "label": "macOS (Intel)" },
+          { "path": "dist/burp-linux-arm64", "label": "Linux (ARM64)" },
+          { "path": "dist/burp-linux-x64", "label": "Linux (x64)" },
+          { "path": "scripts/install.sh", "label": "Install script" }
+        ]
+      }
+    ]
+  ]
+}
