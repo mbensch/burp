@@ -1,12 +1,12 @@
-import Database from "better-sqlite3";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { Database } from "bun:sqlite";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { runMigrations } from "./schema";
 
-let db: Database.Database;
+let db: Database;
 
 beforeEach(() => {
   db = new Database(":memory:");
-  db.pragma("foreign_keys = ON");
+  db.exec("PRAGMA foreign_keys = ON");
 });
 
 afterEach(() => {

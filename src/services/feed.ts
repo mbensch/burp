@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import Parser from "rss-parser";
 import type { UpsertArticleInput } from "../db/queries";
 import { getFeedById, listFeeds, touchFeedFetchedAt, upsertArticle } from "../db/queries";
@@ -59,7 +59,7 @@ export async function fetchAndParseFeed(url: string): Promise<ParsedFeed> {
   };
 }
 
-export async function refreshFeed(db: Database.Database, feedId: number): Promise<RefreshResult> {
+export async function refreshFeed(db: Database, feedId: number): Promise<RefreshResult> {
   const result: RefreshResult = { feedId, added: 0, errors: [] };
 
   const feed = getFeedById(db, feedId);
@@ -99,7 +99,7 @@ export async function refreshFeed(db: Database.Database, feedId: number): Promis
   return result;
 }
 
-export async function refreshAllFeeds(db: Database.Database): Promise<RefreshResult[]> {
+export async function refreshAllFeeds(db: Database): Promise<RefreshResult[]> {
   const feeds = listFeeds(db);
   return Promise.all(feeds.map((f) => refreshFeed(db, f.id)));
 }

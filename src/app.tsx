@@ -1,6 +1,6 @@
+import type { Database } from "bun:sqlite";
 import { exec } from "node:child_process";
 import { platform } from "node:os";
-import type Database from "better-sqlite3";
 import { convert } from "html-to-text";
 import { Box, useApp, useInput } from "ink";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -30,7 +30,7 @@ import { Search } from "./views/Search";
 type View = "feedList" | "articleList" | "articleView" | "addFeed" | "search";
 
 interface AppProps {
-  db: Database.Database;
+  db: Database;
   initialOpmlPath?: string;
 }
 

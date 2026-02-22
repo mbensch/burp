@@ -1,8 +1,8 @@
+import { Database } from "bun:sqlite";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import Database from "better-sqlite3";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { runMigrations } from "../db/schema";
 import { importOpml } from "./opml";
 
@@ -48,11 +48,11 @@ const NO_XMLURL_OPML = `<?xml version="1.0" encoding="UTF-8"?>
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
-let db: Database.Database;
+let db: Database;
 
 beforeEach(() => {
   db = new Database(":memory:");
-  db.pragma("foreign_keys = ON");
+  db.exec("PRAGMA foreign_keys = ON");
   runMigrations(db);
 });
 

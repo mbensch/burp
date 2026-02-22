@@ -1,5 +1,5 @@
-import Database from "better-sqlite3";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { Database } from "bun:sqlite";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import {
   addFeed,
   addTagToArticle,
@@ -25,7 +25,7 @@ import {
 } from "./queries";
 import { runMigrations } from "./schema";
 
-let db: Database.Database;
+let db: Database;
 
 function seedFeed(overrides = {}) {
   return addFeed(db, {
@@ -54,7 +54,7 @@ function seedArticle(feedId: number, overrides = {}) {
 
 beforeEach(() => {
   db = new Database(":memory:");
-  db.pragma("foreign_keys = ON");
+  db.exec("PRAGMA foreign_keys = ON");
   runMigrations(db);
 });
 
@@ -89,7 +89,7 @@ describe("removeFeed", () => {
 
     removeFeed(db, feed.id);
 
-    expect(getFeedById(db, feed.id)).toBeUndefined();
+    expect(getFeedById(db, feed.id)).toBeNull();
     expect(listAllArticles(db)).toHaveLength(0);
   });
 });
@@ -105,8 +105,8 @@ describe("getFeedById / getFeedByUrl", () => {
     expect(getFeedByUrl(db, feed.url)?.id).toBe(feed.id);
   });
 
-  it("returns undefined for unknown id", () => {
-    expect(getFeedById(db, 9999)).toBeUndefined();
+  it("returns null for unknown id", () => {
+    expect(getFeedById(db, 9999)).toBeNull();
   });
 });
 

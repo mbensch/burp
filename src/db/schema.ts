@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 
 const MIGRATIONS: { version: number; sql: string }[] = [
   {
@@ -72,13 +72,14 @@ const MIGRATIONS: { version: number; sql: string }[] = [
   },
 ];
 
-export function runMigrations(db: Database.Database): void {
+export function runMigrations(db: Database): void {
   db.exec("CREATE TABLE IF NOT EXISTS migrations (version INTEGER PRIMARY KEY)");
 
   const applied = new Set<number>(
-    (db.prepare("SELECT version FROM migrations").all() as { version: number }[]).map(
-      (r) => r.version,
-    ),
+    db
+      .prepare<{ version: number }, []>("SELECT version FROM migrations")
+      .all()
+      .map((r) => r.version),
   );
 
   for (const migration of MIGRATIONS) {

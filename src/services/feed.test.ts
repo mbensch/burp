@@ -1,21 +1,22 @@
-import Database from "better-sqlite3";
+import { Database } from "bun:sqlite";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import Parser from "rss-parser";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { addFeed, listArticlesByFeed } from "../db/queries";
 import { runMigrations } from "../db/schema";
 import * as feedService from "./feed";
 
-let db: Database.Database;
+let db: Database;
+let parseURLSpy: ReturnType<typeof spyOn>;
 
 beforeEach(() => {
   db = new Database(":memory:");
-  db.pragma("foreign_keys = ON");
+  db.exec("PRAGMA foreign_keys = ON");
   runMigrations(db);
 });
 
 afterEach(() => {
   db.close();
-  vi.restoreAllMocks();
+  parseURLSpy?.mockRestore();
 });
 
 const MOCK_PARSED_FEED: feedService.ParsedFeed = {
@@ -45,7 +46,7 @@ const MOCK_PARSED_FEED: feedService.ParsedFeed = {
 };
 
 function mockParseURL(feed: feedService.ParsedFeed) {
-  vi.spyOn(Parser.prototype, "parseURL").mockResolvedValue({
+  parseURLSpy = spyOn(Parser.prototype, "parseURL").mockResolvedValue({
     title: feed.title,
     description: feed.description,
     link: feed.site_url,
@@ -102,7 +103,9 @@ describe("refreshFeed", () => {
   });
 
   it("catches a parse/network error and returns it in errors, does not throw", async () => {
-    vi.spyOn(Parser.prototype, "parseURL").mockRejectedValue(new Error("Network timeout"));
+    parseURLSpy = spyOn(Parser.prototype, "parseURL").mockRejectedValue(
+      new Error("Network timeout"),
+    );
 
     const dbFeed = addFeed(db, {
       url: "https://bad-url.example.com/feed",

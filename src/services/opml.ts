@@ -1,5 +1,5 @@
+import type { Database } from "bun:sqlite";
 import { readFile } from "node:fs/promises";
-import type Database from "better-sqlite3";
 import { addFeed, getFeedByUrl } from "../db/queries";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ function parseOpmlFeeds(xml: string): FeedEntry[] {
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export async function importOpml(db: Database.Database, filePath: string): Promise<ImportResult> {
+export async function importOpml(db: Database, filePath: string): Promise<ImportResult> {
   let xml: string;
 
   try {
