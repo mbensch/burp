@@ -9,12 +9,12 @@ Guidance for AI coding agents working on this repository.
 | Runtime | Bun (also Node 22 for native addons) |
 | Language | TypeScript (strict mode) |
 | TUI framework | Ink 5 (React for CLIs) + ink-text-input, ink-select-input |
-| Database | SQLite via `better-sqlite3` |
+| Database | SQLite via `bun:sqlite` |
 | RSS parsing | `rss-parser` |
 | HTML rendering | `html-to-text` |
 | Linting / formatting | Biome |
-| Testing | Vitest |
-| Build | tsup (ESM output to `dist/index.mjs`) |
+| Testing | `bun test` |
+| Build | `bun build --compile` (native binary to `dist/`) |
 
 ## Commands
 
@@ -26,6 +26,18 @@ bun run build       # build the CLI bundle
 ```
 
 Always run `bun run test` and `bun run lint` before opening a PR. Fix all errors — warnings are acceptable only if the suppression is genuinely intentional.
+
+## Workflow
+
+1. **Issue first** — Before starting any work, ensure a GitHub issue exists. If one was not specified by the user, create one with `gh issue create` describing the work.
+2. **Branch from main** — Create a branch named `issue/<number>-<short-slug>` off the latest `main`.
+3. **Do the work** — Implement, test, and lint on the branch.
+4. **Update docs if needed** — Before opening a PR, check whether `AGENTS.md` or `README.md` need to reflect your changes (new commands, architecture changes, changed tooling, new conventions, etc.). Update them in the same PR.
+5. **Open a PR** — Every PR must:
+   - Follow Conventional Commits in the title (e.g. `feat:`, `fix:`, `ci:`) — CI enforces this.
+   - Reference the closing issue in the body (`Closes #N`).
+   - Be linked to the **Burp - CLI RSS Reader** GitHub project (`--project "Burp - CLI RSS Reader"`).
+6. **Never push directly to `main`** — Branch protection requires PRs with passing CI checks.
 
 ## Architecture
 
@@ -47,7 +59,7 @@ Views are pure presentational components. All state lives in `app.tsx`.
 ## Key conventions
 
 ### TypeScript
-- Strict mode is on. All query results from `better-sqlite3` must be cast explicitly, e.g. `.get(...) as MyType | undefined`.
+- Strict mode is on. All query results from `bun:sqlite` must be cast explicitly, e.g. `.get(...) as MyType | null` (`bun:sqlite` returns `null`, not `undefined`, for missing rows).
 - Use `0 | 1` for SQLite boolean columns (`is_read`, `is_starred`), not `boolean`.
 - Prefer `interface` over `type` for object shapes.
 
@@ -65,7 +77,7 @@ Views are pure presentational components. All state lives in `app.tsx`.
 
 ### Services
 - Services (`feed.ts`, `opml.ts`, `search.ts`) must not throw to the caller for recoverable errors — catch and return them in an `errors` array or return an empty result.
-- Do not make real network calls in tests. Mock `Parser.prototype.parseURL` with `vi.spyOn`.
+- Do not make real network calls in tests. Mock `Parser.prototype.parseURL` with `spyOn` from `bun:test` (no `vi` prefix).
 
 ### Biome
 - Formatting: 2-space indent, double quotes, trailing commas, 100-char line width.
@@ -80,8 +92,11 @@ Views are pure presentational components. All state lives in `app.tsx`.
 
 ## PR checklist
 
+- [ ] Work is tracked by a GitHub issue (create one if not specified)
+- [ ] `AGENTS.md` and `README.md` updated if needed
 - [ ] `bun run test` passes
 - [ ] `bun run lint` is clean
 - [ ] `bun run build` succeeds
+- [ ] PR title follows Conventional Commits (`feat:`, `fix:`, `ci:`, etc.)
 - [ ] PR is linked to the **Burp - CLI RSS Reader** GitHub project (`--project "Burp - CLI RSS Reader"` on `gh pr create`)
 - [ ] PR body references the closing issue (`Closes #N`)
