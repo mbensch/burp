@@ -29,7 +29,7 @@ curl -fsSL https://raw.githubusercontent.com/mbensch/burp/main/scripts/install.s
 Installs to `~/.local/bin/burp`. Override the location with `BURP_INSTALL_DIR`:
 
 ```sh
-BURP_INSTALL_DIR=/usr/local/bin curl -fsSL https://raw.githubusercontent.com/mbensch/burp/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/mbensch/burp/main/scripts/install.sh | BURP_INSTALL_DIR=/usr/local/bin sh
 ```
 
 Or download the binary for your platform directly from the [latest release](https://github.com/mbensch/burp/releases/latest).
